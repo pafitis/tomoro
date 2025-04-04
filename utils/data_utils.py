@@ -1,4 +1,4 @@
-import pandas
+import pandas as pd
 
 
 def table_to_sentences(context_table: list[list[str]]) -> str:
@@ -62,3 +62,81 @@ def text_cleaner(text_list: list[str]) -> str:
                  for text in text_list if text.endswith(" .")]
 
     return " ".join(text_list)
+
+
+def get_context(entry: pd.Series, add_pre_post=True) -> str:
+    """Extracts context from a data entry
+    Can either add the pre- and post- text onto the table
+    or choose to only provide the table
+
+    Args:
+        entry (pd.Series): Single entry from the training data
+        add_pre_post (bool, optional): Determines if the pre- and post- texts 
+            are added onto the table. Defaults to True.
+
+    Returns:
+        str: Flattened string with the provided context
+    """
+
+    if add_pre_post:
+        pre_context = entry.pre_text
+        post_context = entry.post_text
+
+        clean_pre_text = text_cleaner(pre_context)
+        clean_post_text = text_cleaner(post_context)
+
+    table = entry.table
+    table_sentences = table_to_sentences(table)
+
+    output = (
+        f"Context:\n\n{clean_pre_text}\n\n"
+        f"{table_sentences}\n\n{clean_post_text}\n\nAnswer:\n\n"
+        if add_pre_post
+        else f'Context:\n\n{table_sentences}'
+    )
+
+    return output
+
+
+def process_data_entry(entry: pd.Series) -> dict:
+    """Wrapper to process training/test data into an easily digestible format
+    Creates a dictionary for each entry with specific useful information
+
+    Args:
+        entry (pd.Series): Single entry from the data provided
+
+    Returns:
+        dict: Output dictionary with information needed for modelling
+    """
+    if isinstance(entry["qa"], dict):
+        question_type = "simple"
+        question = entry.qa.get("question")
+        answer = entry.qa.get("answer")
+    else:
+        question_type = "hybrid"
+        question = [entry.qa_0.get("question"), entry.qa_1.get("question")]
+        answer = [entry.qa_0.get("answer"), entry.qa_1.get("answer")]
+
+    context = get_context(entry)
+
+    return {
+        "question_type": question_type,
+        "question": question,
+        "answer": answer,
+        "context": context,
+        "step_by_step_questions": entry.annotation.get("dialogue_break"),
+        "step_by_step_answers": entry.annotation.get("exe_ans_list"),
+        "step_by_step_split": entry.annotation.get("qa_split"),
+    }
+
+
+def process_data_table(table: pd.DataFrame) -> pd.Series:
+    """Wrapper to process all entries
+
+    Args:
+        table (pd.DataFrame): Dataframe with all entries to be processed
+
+    Returns:
+        pd.Series: Collection of dictionaries
+    """
+    return table.apply(process_data_entry, axis=1)
