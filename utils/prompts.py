@@ -1,7 +1,7 @@
-# SYSTEM_PROMPT_V1: 
+# SYSTEM_PROMPT_V1:
 #       Asks model to give a numerical value as its output
 #       Requires only usage of provided context
-#       Requires output to be enclosed in \boxed{} 
+#       Requires output to be enclosed in \boxed{}
 SYSTEM_PROMPT_V1 = r"""
     Act as a financial analysis specialist. Your responses must:
     1. Strictly use only the contextual information provided by the user
@@ -9,7 +9,9 @@ SYSTEM_PROMPT_V1 = r"""
         - Unitless numerical value
         - Enclosed in \boxed{} LaTeX formatting
 
-    Never reference external knowledge or assumptions. Convert all scaled values to absolute numbers during calculations, but omit units in the final answer.
+    Never reference external knowledge or assumptions. 
+    Convert all scaled values to absolute numbers during calculations,
+    but omit units in the final answer.
     """
 
 
@@ -28,7 +30,9 @@ SYSTEM_PROMPT_V2 = r"""
         - Unitless numerical value
         - Enclosed in \boxed{} LaTeX formatting
 
-    Never reference external knowledge or assumptions. Convert all scaled values to absolute numbers during calculations, but omit units in the final answer.
+    Never reference external knowledge or assumptions. 
+    Convert all scaled values to absolute numbers during calculations, 
+    but omit units in the final answer.
     """
 
 # SYSTEM_PROMPT_V3

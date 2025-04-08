@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 
 
 def table_to_sentences(context_table: list[list[str]]) -> str:
@@ -64,38 +65,39 @@ def text_cleaner(text_list: list[str]) -> str:
     return " ".join(text_list)
 
 
-def get_context(entry: pd.Series, add_pre_post=True) -> str:
+def get_context(entry: pd.Series, return_short=True) -> str:
     """Extracts context from a data entry
     Can either add the pre- and post- text onto the table
     or choose to only provide the table
 
     Args:
         entry (pd.Series): Single entry from the training data
-        add_pre_post (bool, optional): Determines if the pre- and post- texts 
+        return_short (bool, optional): Determines if the pre- and post- texts 
             are added onto the table. Defaults to True.
 
     Returns:
         str: Flattened string with the provided context
     """
 
-    if add_pre_post:
-        pre_context = entry.pre_text
-        post_context = entry.post_text
+    pre_context = entry.pre_text
+    post_context = entry.post_text
 
-        clean_pre_text = text_cleaner(pre_context)
-        clean_post_text = text_cleaner(post_context)
+    clean_pre_text = text_cleaner(pre_context)
+    clean_post_text = text_cleaner(post_context)
 
     table = entry.table
     table_sentences = table_to_sentences(table)
 
-    output = (
+    full_context = (
         f"Context:\n\n{clean_pre_text}\n\n"
         f"{table_sentences}\n\n{clean_post_text}\n\nAnswer:\n\n"
-        if add_pre_post
-        else f'Context:\n\n{table_sentences}'
     )
 
-    return output
+    if return_short:
+        short_context = f'Context:\n\n{table_sentences}\n\nAnswer:\n\n'
+        return short_context, full_context
+    else:
+        return full_context
 
 
 def process_data_entry(entry: pd.Series) -> dict:
@@ -117,13 +119,14 @@ def process_data_entry(entry: pd.Series) -> dict:
         question = [entry.qa_0.get("question"), entry.qa_1.get("question")]
         answer = [entry.qa_0.get("answer"), entry.qa_1.get("answer")]
 
-    context = get_context(entry)
+    short_context, full_context = get_context(entry, return_short=True)
 
     return {
         "question_type": question_type,
         "question": question,
         "answer": answer,
-        "context": context,
+        "short_context": short_context,
+        "full_context": full_context,
         "step_by_step_questions": entry.annotation.get("dialogue_break"),
         "step_by_step_answers": entry.annotation.get("exe_ans_list"),
         "step_by_step_split": entry.annotation.get("qa_split"),
