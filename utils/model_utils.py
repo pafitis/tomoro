@@ -2,8 +2,7 @@ import asyncio
 import pandas as pd
 from openai import AsyncOpenAI, OpenAI
 from tenacity import retry, stop_after_attempt, wait_random_exponential
-from eval_utils import find_answer
-# from src.eval_utils import find_answer
+from utils.eval_utils import find_answer
 
 
 def add_past_responses(history: list[str]) -> list[dict]:
@@ -97,6 +96,7 @@ async def async_converse_llm(
         inputs = [
             {"role": "system", "content": sys_prompt},
             {"role": "user", "content": _context},
+            {"role": "assistant", "content": 'Context acknowledged, awaiting for question.'},
             *add_past_responses(history),
             {"role": "user", "content": current_question},
         ]
@@ -126,10 +126,7 @@ def model_completions(
     client: OpenAI, model_name: str, messages: list,
     temperature: float = 0.0, max_token: int = 1024
 ) -> str:
-    """Wrapper function that incorporates retries attempts
-
-    As sometimes there are connection errors due to my VPN/ provider
-
+    """Wrapper function for model completions
     Args:
         client (AsyncOpenAI): OpenAI client
         model_name (str): model name
@@ -216,8 +213,8 @@ def converse_llm(
 
 if __name__ == '__main__':
 
-    from data_utils import process_data_table
-    from prompts import SYSTEM_PROMPT_V4
+    from utils.data_utils import process_data_table
+    from utils.prompts import SYSTEM_PROMPT_V4
 
     raw_data = pd.read_json('data/train.json')
     all_prompts = process_data_table(raw_data)
