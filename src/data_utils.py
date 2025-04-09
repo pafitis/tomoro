@@ -90,11 +90,11 @@ def get_context(entry: pd.Series, return_short=True) -> str:
 
     full_context = (
         f"Context:\n\n{clean_pre_text}\n\n"
-        f"{table_sentences}\n\n{clean_post_text}\n\nAnswer:\n\n"
+        f"{table_sentences}\n\n{clean_post_text}\n\n"
     )
 
     if return_short:
-        short_context = f'Context:\n\n{table_sentences}\n\nAnswer:\n\n'
+        short_context = f'Context:\n\n{table_sentences}\n\n'
         return short_context, full_context
     else:
         return full_context

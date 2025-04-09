@@ -131,16 +131,24 @@ def evaluate_experiment(experiment_results, delta=0.05):
     correct_counter_fix = 0
     total_preds = 0
 
-    if isinstance(experiment_results, pd.DataFrame):
-        experiment_results = experiment_results.to_dict()
+    if isinstance(experiment_results, str):
+        experiment_results = pd.read_json(
+            experiment_results, typ='series').to_dict()
+
+    if not isinstance(experiment_results, dict):
+        experiment_results = pd.Series(experiment_results).to_dict()
 
     for x, entry in experiment_results.items():
         entry_metrics = []
         for interim_step in entry:
-
-            total_preds += 1
+            complete_response = interim_step.get('complete_response')
             model_pred = interim_step.get("model_response")
             annot_answer = interim_step.get("annotator_answer")
+
+            # This has now been resolved with the usage of tenacity
+            # Retries are done at execution
+            if 'Error encountered' in complete_response:
+                continue
 
             # Is answer parsable?
             try:
@@ -165,7 +173,7 @@ def evaluate_experiment(experiment_results, delta=0.05):
             entry_metrics.append(
                 {
                     "question": interim_step.get("question"),
-                    "complete_response": interim_step.get("complete_response"),
+                    "complete_response": complete_response,
                     "model_pred": model_pred,
                     "eval_ans": evaluated_pred,
                     "annot_ans": annot_answer,
@@ -176,6 +184,8 @@ def evaluate_experiment(experiment_results, delta=0.05):
                     "delta_perc_fix": _delta_percentage_fix,
                 }
             )
+
+            total_preds += 1
 
         metrics.append(entry_metrics)
 
