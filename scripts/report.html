@@ -7650,7 +7650,7 @@ After I have a basic understanding of what the authors are doing, I want to fami
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [30]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [1]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -7667,7 +7667,7 @@ After I have a basic understanding of what the authors are doing, I want to fami
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[30]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[1]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
 <pre>pre_text      [26 | 2009 annual report in fiscal 2008 , reve...
 post_text     [year ended june 30 , cash provided by operati...
@@ -7868,7 +7868,7 @@ I'm thinking I'll take the API approach as my computer cannot run much...</p>
 <li><code>deepseek-chat</code></li>
 <li><code>deepseek-reasoner</code></li>
 </ul>
-<p>I cannot find explicit reference to what variants of Deepseek v3 and Deepseek R1 these are. However, I did find mentions that these are distilled versions and not the whole 7B param models.
+<p>I cannot find explicit reference to what variants of Deepseek v3 and Deepseek R1 these are. However, I did find mentions that these are distilled versions and not the whole ~670B param models.
 It is likely that API requests are being allocated to smaller models if the service is busy.</p>
 <p>A quote I found:</p>
 <pre><code>deepseek-chat: Based on DeepSeek-R1-Lite-Chat, a distilled version optimized for conversational tasks.
@@ -8136,10 +8136,12 @@ This is only for internal usage - the LLM still gets the answer wrong if we are 
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">utils.data_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">process_data_table</span> 
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'..'</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils.data_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">process_data_table</span>
 <span class="c1"># process_data_table is used for easy extraction of `gold_inds`</span>
 <span class="c1"># no modification is done </span>
 <span class="n">all_prompts</span> <span class="o">=</span> <span class="n">process_data_table</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
@@ -8229,7 +8231,7 @@ This is only for internal usage - the LLM still gets the answer wrong if we are 
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">sys</span>
@@ -8360,7 +8362,7 @@ Metrics:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [66]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -8393,7 +8395,7 @@ Metrics:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [57]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Very little % of unparsable answers!</span>
@@ -8423,7 +8425,7 @@ Metrics:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [58]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Approx. 8-10% need a fix for their format (percentage vs decimal)</span>
@@ -8453,7 +8455,7 @@ Metrics:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [98]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># There are occurrences where the mismatch comes from unit conversion</span>
