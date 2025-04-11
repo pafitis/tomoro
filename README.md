@@ -1,4 +1,4 @@
-# tomoro
+# Tomoro.ai
 Technical assessment for ML role at tomoro.ai
 
 Savvas Pafitis
