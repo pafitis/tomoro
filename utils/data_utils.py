@@ -114,10 +114,21 @@ def process_data_entry(entry: pd.Series) -> dict:
         question_type = "simple"
         question = entry.qa.get("question")
         answer = entry.qa.get("answer")
+        gold_inds = list(entry.qa.get('gold_inds').values())
     else:
         question_type = "hybrid"
         question = [entry.qa_0.get("question"), entry.qa_1.get("question")]
         answer = [entry.qa_0.get("answer"), entry.qa_1.get("answer")]
+
+        # Ensure there is no duplication in our gold context
+        gold_inds = list(
+            set(entry.qa_0.get('gold_inds').values())
+            |
+            set(entry.qa_1.get('gold_inds').values())
+        )
+
+    # Convert into a single string for compatibility
+    gold_inds = '; '.join(gold_inds)
 
     short_context, full_context = get_context(entry, return_short=True)
 
@@ -127,6 +138,7 @@ def process_data_entry(entry: pd.Series) -> dict:
         "answer": answer,
         "short_context": short_context,
         "full_context": full_context,
+        "gold_inds": gold_inds,
         "step_by_step_questions": entry.annotation.get("dialogue_break"),
         "step_by_step_answers": entry.annotation.get("exe_ans_list"),
         "step_by_step_split": entry.annotation.get("qa_split"),

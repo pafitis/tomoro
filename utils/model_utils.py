@@ -2,6 +2,7 @@ import asyncio
 import pandas as pd
 from openai import AsyncOpenAI, OpenAI
 from tenacity import retry, stop_after_attempt, wait_random_exponential
+# from eval_utils import find_answer
 from utils.eval_utils import find_answer
 
 
@@ -23,8 +24,7 @@ def add_past_responses(history: list[str]) -> list[dict]:
         for entry in history:
             output += [
                 {"role": "user", "content": entry.get("question")},
-                {"role": "assistant", "content": entry.get(
-                    "model_response")},
+                {"role": "assistant", "content": entry.get("model_response")},
             ]
     return output
 
@@ -32,7 +32,8 @@ def add_past_responses(history: list[str]) -> list[dict]:
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(3))
 async def tenacious_model_completions(
     client: AsyncOpenAI, model_name: str, messages: list,
-    temperature: float = 0.0, max_token: int = 1024
+    temperature: float = 0.0, max_token: int = 1024,
+    use_structured_outputs=False,
 ) -> str:
     """Wrapper function that incorporates retries attempts
 
@@ -54,6 +55,8 @@ async def tenacious_model_completions(
         messages=messages,
         temperature=temperature,
         max_tokens=max_token,
+        response_format=(
+            {'type': 'json_object'} if use_structured_outputs else None)
     )
 
 
@@ -63,15 +66,22 @@ async def async_converse_llm(
     client: AsyncOpenAI,
     model_name: str,
     use_short_context: bool = False,
+    use_gold_inds: bool = False,
     question_to_use: str = "step_by_step_questions",
     answers_to_use: str = "step_by_step_answers",
     example_shots: str = "",
     sys_prompt: str = "",
+    use_structured_outputs: bool = False,
 ):
+
+    if use_short_context and use_gold_inds:
+        raise ValueError(
+            'use_short_context and use_gold_inds cannot be both True')
 
     # Chooses which context to use
     _context = (
-        processed_data_entry.get("short_context") if use_short_context
+        processed_data_entry.get('gold_inds') if use_gold_inds
+        else processed_data_entry.get("short_context") if use_short_context
         else processed_data_entry.get('full_context')
     )
 
@@ -105,7 +115,10 @@ async def async_converse_llm(
         # per DeepSeek's docs; low temp -> deterministic
         # since math questions, we want low variation
         try:
-            response = await tenacious_model_completions(client, model_name, inputs)
+            response = await tenacious_model_completions(
+                client=client, model_name=model_name, messages=inputs,
+                temperature=0.0, max_token=1024,
+                use_structured_outputs=use_structured_outputs)
             response = response.choices[0].message.content
         except Exception as e:
             response = f"Error encountered: {str(e)}"
@@ -124,7 +137,8 @@ async def async_converse_llm(
 
 def model_completions(
     client: OpenAI, model_name: str, messages: list,
-    temperature: float = 0.0, max_token: int = 1024
+    temperature: float = 0.0, max_token: int = 1024,
+    use_structured_outputs: bool = False,
 ) -> str:
     """Wrapper function for model completions
     Args:
@@ -143,6 +157,8 @@ def model_completions(
         messages=messages,
         temperature=temperature,
         max_tokens=max_token,
+        response_format=(
+            {'type': 'json_object'} if use_structured_outputs else None)
     )
 
 
@@ -151,15 +167,22 @@ def converse_llm(
     client: OpenAI,
     model_name: str,
     use_short_context: bool = False,
+    use_gold_inds: bool = False,
     question_to_use: str = "step_by_step_questions",
     answers_to_use: str = "step_by_step_answers",
     example_shots: str = "",
     sys_prompt: str = "",
+    use_structured_outputs: bool = False,
 ):
+
+    if use_short_context and use_gold_inds:
+        raise ValueError(
+            'use_short_context and use_gold_inds cannot be both True')
 
     # Chooses which context to use
     _context = (
-        processed_data_entry.get("short_context") if use_short_context
+        processed_data_entry.get('gold_inds') if use_gold_inds
+        else processed_data_entry.get("short_context") if use_short_context
         else processed_data_entry.get('full_context')
     )
 
@@ -194,7 +217,10 @@ def converse_llm(
         # per DeepSeek's docs; low temp -> deterministic
         # since math questions, we want low variation
         try:
-            response = model_completions(client, model_name, inputs)
+            response = model_completions(
+                client=client, model_name=model_name, messages=inputs,
+                temperature=0.0, max_token=1024,
+                use_structured_outputs=use_structured_outputs)
             response = response.choices[0].message.content
         except Exception as e:
             response = f"Error encountered: {str(e)}"
@@ -213,8 +239,8 @@ def converse_llm(
 
 if __name__ == '__main__':
 
-    from utils.data_utils import process_data_table
-    from utils.prompts import SYSTEM_PROMPT_V4
+    from data_utils import process_data_table
+    from prompts import SYSTEM_PROMPT_V3
 
     raw_data = pd.read_json('data/train.json')
     all_prompts = process_data_table(raw_data)
@@ -229,5 +255,10 @@ if __name__ == '__main__':
         processed_data_entry=all_prompts[0],
         client=client,
         model_name='deepseek-reasoner',
-        sys_prompt=SYSTEM_PROMPT_V4
+        use_gold_inds=True,
+        question_to_use='step_by_step_questions',
+        answers_to_use='step_by_step_answers',
+        example_shots='',
+        sys_prompt=SYSTEM_PROMPT_V3,
+        use_structured_outputs=False,
     )
