@@ -2,7 +2,6 @@ import asyncio
 import pandas as pd
 from openai import AsyncOpenAI, OpenAI
 from tenacity import retry, stop_after_attempt, wait_random_exponential
-# from eval_utils import find_answer
 from utils.eval_utils import find_answer
 
 
